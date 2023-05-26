@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./AddFile.css";
+import moment from 'moment';
 import { GrAddCircle } from "react-icons/gr";
 import { Document, Page, pdfjs } from "react-pdf";
 import { postFile } from "../../services/addFile/FilesApi";
@@ -297,6 +298,7 @@ export default function AddFile() {
     }
   };
 
+
   useEffect(() => {
     if (formData && formData1 && formData2) {
       setMainForm({ ...formData, ...formData1, ...formData2 });
@@ -354,7 +356,7 @@ export default function AddFile() {
 
   function handleNextPage() {
     console.log("next page ;", checkFYE);
-    if (!checkFYE?.FYEAsAtDateOfLastAR && pageNumber == 2) {
+    if (isNoFye === false && pageNumber == 2) {
       return alert("Please Fill the FYE field ");
     }
     setPageNumber((prevPageNumber) => prevPageNumber + 1);
@@ -383,6 +385,15 @@ export default function AddFile() {
       FYEAsAtDateOfLastAR: selectedDate
     })
   }
+  const isNoFye = formData1?.FYEAsAtDateOfLastAR?.trim() === '' && moment(formData1?.FYEAsAtDateOfLastAR, 'DD/MM/YYYY', true).isValid();
+  console.log("is no fye:", isNoFye);
+
+
+  // const isNoFye = formData1?.FYEAsAtDateOfLastAR?.trim() !== '' && formData1?.FYEAsAtDateOfLastAR?.trim() !== undefined && formData1?.FYEAsAtDateOfLastAR?.trim() !== null && formData1?.FYEAsAtDateOfLastAR?.trim().match(
+  //   /(\d{1,2})\/(\d{1,2})\/(\d{4})/
+  // ) === null
+
+  console.log("is no fye :", isNoFye);
   return (
     <div>
       <span className="heading">
@@ -854,20 +865,10 @@ export default function AddFile() {
                   </label>
                 </div>
                 <div className="col-md-6">
-                  <input
-                    type="date"
-                    placeholder="mm/dd/yyy"
-                    className="form-control"
-                    id="inputCity"
-                    value={formattedDate}
-                    onChange={(e) =>
-                      handleChangeFYE(e)
-                      // setFormData({
-                      //   ...formData,
-                      //    : e.target.value,
-
+                  <input type="text" className="form-control" id="inputCity"
+                    value={formData1.FYEAsAtDateOfLastAR} onChange={
+                      (e) => setFormData1({ ...formData1, FYEAsAtDateOfLastAR: e.target.value })
                     }
-
                   />
                 </div>
                 <p>Audit Firms</p>
@@ -2749,15 +2750,23 @@ export default function AddFile() {
                       //   })
                       // }
                       value={checkFYE?.FYEAsAtDateOfLastAR}
-                      onChange={(e) =>
-                        // setFormData({
-                        //   ...formData,
-                        //   FYEAsAtDateOfLastAR: e.target.value,
-                        // })
-                        setCheckFYE({
-                          ...checkFYE,
-                          FYEAsAtDateOfLastAR: e.target.value,
-                        })
+                      onChange={(e) => {
+                        if (isNoFye == false) {
+                          alert("Please select FYE As At Date Of Last AR")
+                        }
+                        else {
+
+
+                          // setFormData({
+                          //   ...formData,
+                          //   FYEAsAtDateOfLastAR: e.target.value,
+                          // })
+                          setCheckFYE({
+                            ...checkFYE,
+                            FYEAsAtDateOfLastAR: e.target.value,
+                          })
+                        }
+                      }
                       }
                     />
                   </div>
